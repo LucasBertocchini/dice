@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>dice</title>
+    <style>
+      input {
+        padding: 1rem;
+        font-size: xx-large;
+        width: 4rem;
+      }
+      td,
+      th {
+        border: 1px solid #000;
+        width: 1.5rem;
+        max-width: 100%;
+        text-align: center;
+      }
+      table {
+        border-collapse: collapse;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>fair dice calculator</h1>
+      <h4>Lucas Bertocchini</h4>
+      <p>
+        the pairs of dice found here have the same distribution (summed values)
+        when rolled as a pair of regular dice of n sides, numbered 1 through n
+      </p>
+      <label id="input">
+        type then hit Enter or press arrows
+        <br />
+        long calculation times above n=10 or so, this is not particularly
+        efficient
+        <br />
+        number of sides:
+        <br />
+        <input type="number" value="8" onchange="handleInput(this.value)" />
+      </label>
+      <br /><br />
+      while making this, I found a certain class of die that appears to work for
+      every even integer (odd integers are skipped).
+      <br />
+      the search is much faster if only this class of die is searched for,
+      otherwise all solutions are found.
+      <br />
+      unchecking the box to find one die up to n=18 relatively quickly:
+      <br />
+      <label>
+        find all dice
+        <input type="checkbox" id="allDice" name="allDice" checked />
+      </label>
+      <br />
+      <h3>
+        <span id="allOrOne">all</span> <span id="numSides">8</span>-sided dice:
+      </h3>
+      <table id="dice">
+        <thead>
+          <tr>
+            <th>die 1</th>
+            <th></th>
+            <th>die 2</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <br />
+      <p>
+        for dice x and y with sides x<sub>i</sub> and y<sub>i</sub> (1 &leq; i
+        &leq; n), the particular solution being searched for when "find all
+        dice" is unchecked:
+      </p>
+      <ul>
+        <li>satisfies y<sub>i</sub> = 1 + floor(i/2)</li>
+        <li>
+          appears to satisfy:
+          <br />
+          for n = 4k:
+          <ul>
+            <li>x<sub>i</sub> = 2i - 1 (i &leq; k)</li>
+            <li>
+              x<sub>i</sub> = 2floor(i/2) + 2k - 3 (k + 1 &leq; i &leq; 3k - 1)
+            </li>
+            <li>x<sub>i</sub> = 2i - 2k - 1 (3k &leq; i)</li>
+          </ul>
+          <br />
+          for n = 4k - 2:
+          <ul>
+            <li>x<sub>i</sub> = 2i (i &leq; k)</li>
+            <li>x<sub>i</sub> = i + k - 1 (k + 1 &leq; i &leq; 3k - 1)</li>
+            <li>x<sub>i</sub> = 2i - 2k (3k &leq; i)</li>
+          </ul>
+        </li>
+      </ul>
+      <h3>proof for even n:</h3>
+      <p>
+        I will refer to "the generating function for a die" in the following.
+        <br />
+        By this, I mean a an exponential generating function with the
+        coefficients of e<sup>mt</sup>
+        corresponding to how many sides of the die have number m.
+        <br />
+        For example, e<sup>t</sup>+2e<sup>2t</sup>+2e<sup>3t</sup>+e<sup
+          >4t</sup
+        >
+        would correspond to a die with sides (1,2,2,3,3,4).
+        <br />
+        Notice that multiplying two of these generating functions gives the
+        distribution of outcomes for rolls of the two dice.
+        <br />
+        For example, let f(t, n)=e<sup>t</sup>+e<sup>2t</sup>+...+e<sup>nt</sup>
+        be a generating function in t for the fair n-sided die: then f(t, n)^2
+        gives the distribution for rolling two fair n-sided dice.
+        <br />
+        f(t, n) has the following form (this and the following results are
+        obtained through geometric series expansions):
+      </p>
+      <img src="./fairDice.png" width="400px" />
+      <p>
+        in the following let x[t, k] be generating function for the
+        corresponding die x specified above, and y[t, k] generating function for
+        y
+      </p>
+      <h3>case n = 4k:</h3>
+      <p>
+        geometric series arguments show
+        <br />
+        (this is a bit hand-waivy to just state, but it does not take long to
+        derive/show that x0 (y0) indeed is the sum over i of e<sup
+          >x<sub>i</sub>t</sup
+        >
+        (e<sup>y<sub>i</sub>t</sup>))
+      </p>
+      <img src="./x0y0.png" width="500px" />
+      <p>
+        an example x0,y0 is given above for n=16 sided dice (k=4)
+        <br />simplifying and taking their product,
+      </p>
+      <img src="./x0y0simplify.png" width="300px" />
+      <p>
+        notice this product expression is exactly f(t, 4k)^2, the distribution
+        of two fair dice being rolled, so we are done with this case:
+      </p>
+      <img src="./x0y0expand.png" width="600px" />
+      <br /><br /><br />
+      <h3>case n = 4k - 2:</h3>
+      <p>geometric series arguments show</p>
+      <img src="./x1y1.png" width="500px" />
+      <p>
+        an example x1,y1 is given above for n=10 sided dice (k=3) simplifying
+        and taking their product,
+      </p>
+      <img src="./x1y1simplify.png" width="300px" />
+      <p>
+        notice this product expression is exactly f(t, 4k-2)^2, the distribution
+        of two fair dice being rolled, so we are done with this case:
+      </p>
+      <img src="./x1y1expand.png" width="600px" />
+      <h3>wrapping up</h3>
+      <p>
+        finally, because x0 and x1 (y0 and y1) are essentially the same
+        functions as seen here:
+      </p>
+      <img src="./difference.png" width="400px" />
+      <p>we can write x(t, m) and y(t, m) for any n=2m as follows:</p>
+      <img src="./xy.png" width="400px" />
+      <p>
+        and since their product is f(t, 2m), we can immediately see the
+        corresponding pair of dice is always fair
+        <br />
+        &#9633;
+      </p>
+      <hr />
+      <br />
+      <h4>all nontrivial 8-sided dice:</h4>
+      <table id="dice8">
+        <thead>
+          <tr>
+            <th>die 1</th>
+            <th></th>
+            <th>die 2</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <br />
+      <h4>all nontrivial 9-sided dice:</h4>
+      <table id="dice9">
+        <thead>
+          <tr>
+            <th>die 1</th>
+            <th></th>
+            <th>die 2</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <br />
+      <h4>all nontrivial 10-sided dice:</h4>
+      <table id="dice10">
+        <thead>
+          <tr>
+            <th>die 1</th>
+            <th></th>
+            <th>die 2</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <br />
+      <h4>all nontrivial 12-sided dice:</h4>
+      <table id="dice12">
+        <thead>
+          <tr>
+            <th>die 1</th>
+            <th></th>
+            <th>die 2</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <br />
+      <hr />
+      <br />
+      <img src="./generatingFunctions.png" width="800px" />
+      <br />
+    </main>
+    <script src="./script.js"></script>
+    <script src="./calculatedDicePairs.js"></script>
+    <script>
+      const numSidesElement = document.querySelector("#numSides")
+      const allDiceElement = document.querySelector("#allDice")
+      const allOrOneElement = document.querySelector("#allOrOne")
+      const diceTable = document.querySelector("#dice")
+      const dice8Table = document.querySelector("#dice8")
+      const dice9Table = document.querySelector("#dice9")
+      const dice10Table = document.querySelector("#dice10")
+      const dice12Table = document.querySelector("#dice12")
+
+      handleInput(8)
+      makeTable(calculatedDicePairs[8], dice8Table)
+      makeTable(calculatedDicePairs[9], dice9Table)
+      makeTable(calculatedDicePairs[10], dice10Table)
+      makeTable(calculatedDicePairs[12], dice12Table)
+
+      function handleInput(value) {
+        numSides = Math.max(parseInt(value), 2)
+        document.querySelector("input").value = numSides
+        const allDice = allDiceElement.checked
+        if (numSides % 2 && !allDice) return
+        const dicePairs = findDice(numSides, allDiceElement.checked)
+        numSidesElement.innerHTML = numSides
+        allOrOneElement.innerHTML = allDice ? "all" : "one"
+
+        makeTable(dicePairs, diceTable)
+      }
+
+      function makeTable(dicePairs, table) {
+        const diceThLabel = table.children[0].children[0]
+        const diceTbody = table.children[1]
+        diceTbody.innerHTML = ""
+        diceThLabel.children[0].colSpan = dicePairs[0][0].length
+        diceThLabel.children[2].colSpan = dicePairs[0][1].length
+
+        for (const dice of dicePairs) {
+          const diceTr = document.createElement("tr")
+          for (const side of [...dice[0], "", ...dice[1]]) {
+            const sideTd = document.createElement("td")
+            sideTd.innerHTML = side
+            diceTr.append(sideTd)
+          }
+          diceTbody.append(diceTr)
+        }
+      }
+    </script>
+  </body>
+</html>
